@@ -1,0 +1,11 @@
+.yolo_world_*.onnx
+.depthai_cached_models
+.yolo_world_cache
+llm.txt
+ocr_copy.py
+ocr_scans.jsonl
+yolo_world_demo.py
+
+imgs/
+test_arrow_detector.py
+.env
