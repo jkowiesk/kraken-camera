@@ -305,7 +305,7 @@ def _gemini_generate_text_only(prompt: str, model=None, timeout_s: int = 25):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{selected_model}:generateContent?key={api_key}"
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 512},
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 2048},
     }
     req = urllib.request.Request(
         url,
