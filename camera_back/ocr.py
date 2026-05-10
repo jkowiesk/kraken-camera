@@ -7,6 +7,7 @@ real-time using YOLO-World, and runs on-demand OCR + Gemini route analysis.
 Controls:
     - k: run OCR once (on-demand)
     - g: ask Gemini to evaluate signage/route based on the last scans
+    - c: clear OCR/arrow overlays
     - q: quit
 """
 
@@ -41,6 +42,13 @@ try:
 except ImportError:
     print("EasyOCR not installed.  pip install easyocr")
     exit(1)
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
 # ── YOLO-World constants ───────────────────────────────────────────────────────
@@ -297,7 +305,7 @@ def _gemini_generate_text_only(prompt: str, model=None, timeout_s: int = 25):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{selected_model}:generateContent?key={api_key}"
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 512},
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 2048},
     }
     req = urllib.request.Request(
         url,
@@ -364,6 +372,7 @@ def _build_gemini_prompt(scan_history):
 
 
 def main():
+    debug = _env_flag("DEBUG", False)
     # ── 1. Compute CLIP embeddings (downloads ~254 MB once, then cached) ──────
     print(
         f"Preparing YOLO-World embeddings for {len(WAYFINDING_CLASSES)} wayfinding classes …"
@@ -578,15 +587,16 @@ def main():
             # OCR (on demand)
             results = last_ocr_results
             if scan_requested:
-                cv2.putText(
-                    frame,
-                    "SCANNING…",
-                    (frame.shape[1] - 220, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1.1,
-                    (0, 255, 255),
-                    2,
-                )
+                if debug:
+                    cv2.putText(
+                        frame,
+                        "SCANNING…",
+                        (frame.shape[1] - 220, 40),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1.1,
+                        (0, 255, 255),
+                        2,
+                    )
                 results = run_ocr_once(frame)
                 last_ocr_results = results
                 scan_requested = False
@@ -596,15 +606,16 @@ def main():
                 if not scan_history:
                     results = run_ocr_once(frame)
                     last_ocr_results = results
-                cv2.putText(
-                    frame,
-                    "GEMINI CHECK…",
-                    (10, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.9,
-                    (255, 255, 0),
-                    2,
-                )
+                if debug:
+                    cv2.putText(
+                        frame,
+                        "GEMINI CHECK…",
+                        (10, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.9,
+                        (255, 255, 0),
+                        2,
+                    )
                 prompt = _build_gemini_prompt(scan_history)
                 text, err = _gemini_generate_text_only(prompt)
                 last_gemini_text = text if text else f"Gemini unavailable: {err}"
@@ -680,54 +691,55 @@ def main():
                 if yolo_enabled
                 else "Signs: OFF"
             )
-            cv2.putText(
-                frame,
-                f"FPS: {fps:.1f} | k=scan | g=check | OCR: {len(results)} | {sign_str}",
-                (10, 40),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.9,
-                (255, 255, 255),
-                2,
-            )
-
-            if scan_history:
-                age_s = time.time() - scan_history[-1]["ts"]
+            if debug:
                 cv2.putText(
                     frame,
-                    f"Last scan: {age_s:.1f}s ago | History: {len(scan_history)}/10",
-                    (10, 75),
+                    f"FPS: {fps:.1f} | k=scan | g=check | OCR: {len(results)} | {sign_str}",
+                    (10, 40),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,
+                    0.9,
                     (255, 255, 255),
                     2,
                 )
-                signs = scan_history[-1].get("signs", [])
-                if signs:
+
+                if scan_history:
+                    age_s = time.time() - scan_history[-1]["ts"]
                     cv2.putText(
                         frame,
-                        "Signs: "
-                        + ", ".join(
-                            _display_wayfinding_label(s.get("label", ""))
-                            for s in signs[:4]
-                        ),
-                        (10, 105),
+                        f"Last scan: {age_s:.1f}s ago | History: {len(scan_history)}/10",
+                        (10, 75),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.65,
-                        (0, 200, 255),
+                        0.7,
+                        (255, 255, 255),
                         2,
                     )
+                    signs = scan_history[-1].get("signs", [])
+                    if signs:
+                        cv2.putText(
+                            frame,
+                            "Signs: "
+                            + ", ".join(
+                                _display_wayfinding_label(s.get("label", ""))
+                                for s in signs[:4]
+                            ),
+                            (10, 105),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.65,
+                            (0, 200, 255),
+                            2,
+                        )
 
-            if last_gemini_text and (time.time() - last_gemini_ts) < 30:
-                first_line = last_gemini_text.splitlines()[0][:90]
-                cv2.putText(
-                    frame,
-                    f"Gemini: {first_line}",
-                    (10, 140),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,
-                    (255, 255, 0),
-                    2,
-                )
+                if last_gemini_text and (time.time() - last_gemini_ts) < 30:
+                    first_line = last_gemini_text.splitlines()[0][:90]
+                    cv2.putText(
+                        frame,
+                        f"Gemini: {first_line}",
+                        (10, 140),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7,
+                        (255, 255, 0),
+                        2,
+                    )
 
             cv2.imshow("OCR + Wayfinding", frame)
             key = cv2.waitKey(1) & 0xFF
@@ -737,6 +749,9 @@ def main():
                 scan_requested = True
             elif key == ord("g"):
                 gemini_requested = True
+            elif key == ord("c"):
+                last_ocr_results = []
+                last_arrow_detections = []
 
     cv2.destroyAllWindows()
     print("Pipeline stopped.")
