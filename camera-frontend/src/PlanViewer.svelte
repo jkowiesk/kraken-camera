@@ -57,24 +57,48 @@
     position: relative;
     display: inline-block;
     width: 100%;
-    border: 1px solid #ccc;
-    background: #eee;
-    user-select: none;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    border: 1px solid #e2e8f0;
   }
-  .plan-image { display: block; width: 100%; height: auto; }
+
+  .plan-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0.9; /* Makes it feel more like a technical drawing */
+  }
+
   .warning-marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    background: white;
-    border: 2px solid #333;
-    border-radius: 50%;
-    font-size: 1.5rem;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 8px; /* Square with rounded corners looks more modern */
+    font-size: 1.4rem;
     cursor: move;
-    padding: 5px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 10;
-    line-height: 1;
-    transition: scale 0.1s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .warning-marker.dragging { scale: 1.3; z-index: 100; border-color: #007bff; }
+
+  .warning-marker:hover {
+    scale: 1.1;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+    border-color: #3182ce; /* Luxonis-style accent blue */
+  }
+
+  .warning-marker.dragging {
+    scale: 1.2;
+    opacity: 0.9;
+    background: #f7fafc;
+    border-style: dashed;
+  }
 </style>

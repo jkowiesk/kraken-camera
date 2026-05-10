@@ -48,28 +48,87 @@
 <style>
   .modal-box {
     position: fixed;
-    width: 280px;
+    width: 320px;
     background: white;
-    border: 1px solid #444;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    border: 1px solid #e2e8f0;
     z-index: 2000;
-    user-select: none;
+    overflow: hidden;
   }
+
   .handle {
-    padding: 10px;
-    background: #333;
+    padding: 12px 16px;
+    background: #000;
     color: white;
     cursor: grab;
     display: flex;
     justify-content: space-between;
-    border-radius: 7px 7px 0 0;
+    align-items: center;
   }
-  .handle:active { cursor: grabbing; }
-  .content { padding: 15px; }
-  img { width: 100%; border-radius: 4px; margin-bottom: 10px; }
-  h4 { margin: 0 0 10px 0; color: #d32f2f; }
-  p { font-size: 0.85rem; margin: 5px 0; }
-  .fix { color: #2e7d32; font-weight: bold; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px; }
-  .close { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
+
+  .handle span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    background: #f1f5f9;
+  }
+
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    color: #1a202c;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 8px 0;
+  }
+
+  strong {
+    color: #1a202c;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .fix {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #edf2f7;
+    color: #2c7a7b; /* Dark teal for the solution */
+  }
+
+  .close {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close:hover {
+    background: rgba(255,255,255,0.2);
+  }
 </style>
