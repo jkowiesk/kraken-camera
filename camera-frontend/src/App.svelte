@@ -63,7 +63,7 @@
 <main>
   <header>
     <div class="brand">
-      <h1>Luxonis</h1>
+      <h1>InfoFinder</h1>
       <span class="divider">|</span>
       <h2>Plan Inspector</h2>
     </div>
