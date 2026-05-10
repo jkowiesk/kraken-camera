@@ -9,3 +9,5 @@ yolo_world_demo.py
 imgs/
 test_arrow_detector.py
 .env
+arrow_detector_tuned.py
+ocr_simulate.py
