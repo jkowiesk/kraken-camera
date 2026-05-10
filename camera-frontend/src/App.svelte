@@ -6,17 +6,18 @@
   let selectedWarning = null;
   let warnings = [
   {
-    "id": 1,
-    "x": 41.30244700155129,
-    "y": 44.334582161485955,
-    "icon": "⚠️",
-    "title": "Missing Signage",
-    "issue": "Missing sign to toilet. Place it in direction from room 4.",
-    "fix": "Install a standard directional toilet sign.",
-    "imageUrl": "/travolta_tlo.jpg",
-    "modalX": 100,
-    "modalY": 100
-  },
+      id: 1,
+      x: 41.30244700155129,
+    y: 44.334582161485955,
+      icon: '⚠️',
+      title: 'Missing Signage',
+      issue: 'Missing sign to toilet. Place it in direction from room 4.',
+      fix: 'Install a standard directional toilet sign.',
+      imageUrl: '/travolta_tlo.jpg',
+      fixedImageUrl: '/fixed_sign.png', // New property for the fix image
+      modalX: 100,
+      modalY: 100
+    },
   {
     "id": 2,
     "x": 55.72552373225174,
